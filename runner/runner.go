@@ -105,8 +105,8 @@ func (r *CmdRunner) startProgram() (*os.Process, error) {
 		binaryName := args[len(args)-2]
 
 		log.Println("Compiling the program...")
-		source := r.params.dirToMonitor + "/" + goFile
-		target := r.params.dirToMonitor + "/build/" + binaryName
+		source := r.params.GetDirToMonitor() + "/" + goFile
+		target := r.params.GetDirToMonitor() + "/build/" + binaryName
 
 		log.Printf("go build -o %s %s", target, source)
 		cmdBuild := exec.Command("go", "build", "-o", target, source)
