@@ -3,12 +3,12 @@ INSTALL_PATH := ~/.local/bin
 GO_CMD := go
 INSTALL_CMD := install
 RM := rm -f
+GO_LINT := golangci-lint run
 GO_BUILD := $(GO_CMD) build
 GO_INSTALL := $(GO_CMD) install
 GO_CLEAN := $(GO_CMD) clean
 GO_TEST := $(GO_CMD) test
 GO_FMT := $(GO_CMD) fmt
-GO_LINT := $(GO_CMD) lint
 GO_BUILD_TARET := build/$(PROJECT_NAME)
 
 all: build
@@ -27,7 +27,7 @@ fmt:
 	$(GO_FMT) ./...
 
 lint:
-	$(GO_LINT) ./...
+	$(GO_LINT)
 
 clean:
 	$(GO_CLEAN)

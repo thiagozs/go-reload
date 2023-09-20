@@ -3,7 +3,8 @@ package runner
 type CmdRunnerParams struct {
 	dirToMonitor string
 	command      string
-	excludedDirs map[string]bool
+	cmdparams    string
+	excludedDirs []string
 	watcher      Watcher
 }
 
@@ -33,7 +34,14 @@ func Command(cmd string) CmdOpts {
 	}
 }
 
-func ExcludedDirs(dirs map[string]bool) CmdOpts {
+func CmdParams(params string) CmdOpts {
+	return func(o *CmdRunnerParams) error {
+		o.cmdparams = params
+		return nil
+	}
+}
+
+func ExcludedDirs(dirs []string) CmdOpts {
 	return func(o *CmdRunnerParams) error {
 		o.excludedDirs = dirs
 		return nil
@@ -47,7 +55,7 @@ func RegisterWatcher(watcher Watcher) CmdOpts {
 	}
 }
 
-// getters and setters
+// getters ----
 
 func (r CmdRunnerParams) GetDirToMonitor() string {
 	return r.dirToMonitor
@@ -57,12 +65,22 @@ func (r CmdRunnerParams) GetCommand() string {
 	return r.command
 }
 
-func (r CmdRunnerParams) GetExcludedDirs() map[string]bool {
+func (r CmdRunnerParams) GetExcludedDirs() []string {
 	return r.excludedDirs
 }
 
 func (r CmdRunnerParams) GetWatcher() Watcher {
 	return r.watcher
+}
+
+func (r *CmdRunnerParams) GetCmdParams() string {
+	return r.cmdparams
+}
+
+// setters ----
+
+func (r *CmdRunnerParams) SetCmdParams(params string) {
+	r.cmdparams = params
 }
 
 func (r *CmdRunnerParams) SetDirToMonitor(dir string) {
@@ -73,7 +91,7 @@ func (r *CmdRunnerParams) SetCommand(cmd string) {
 	r.command = cmd
 }
 
-func (r *CmdRunnerParams) SetExcludedDirs(dirs map[string]bool) {
+func (r *CmdRunnerParams) SetExcludedDirs(dirs []string) {
 	r.excludedDirs = dirs
 }
 

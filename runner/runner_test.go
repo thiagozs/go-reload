@@ -49,7 +49,7 @@ func TestCmdRunner_RunCommand(t *testing.T) {
 	cmdRunner, err := NewCommandRunner(
 		DirToMonitor("."),
 		Command("echo 'hello'"),
-		ExcludedDirs(map[string]bool{"test": true}),
+		ExcludedDirs([]string{"test"}),
 		RegisterWatcher(mockWatcher),
 	)
 	assert.NoError(t, err)
@@ -70,7 +70,7 @@ func TestCmdRunner_WatchForChanges(t *testing.T) {
 	cmdRunner, err := NewCommandRunner(
 		DirToMonitor("."),
 		Command("echo 'hello'"),
-		ExcludedDirs(map[string]bool{"test": true}),
+		ExcludedDirs([]string{"test"}),
 		RegisterWatcher(mockWatcher),
 	)
 	assert.NoError(t, err)
@@ -100,11 +100,11 @@ func TestCmdRunnerParams_GettersAndSetters(t *testing.T) {
 	watcher := &RealWatcher{Watcher: &fsnotify.Watcher{}}
 	params.SetDirToMonitor(".")
 	params.SetCommand("echo 'hello'")
-	params.SetExcludedDirs(map[string]bool{"test": true})
+	params.SetExcludedDirs([]string{"test"})
 	params.SetWatcher(watcher)
 
 	assert.Equal(t, ".", params.GetDirToMonitor())
 	assert.Equal(t, "echo 'hello'", params.GetCommand())
-	assert.Equal(t, map[string]bool{"test": true}, params.GetExcludedDirs())
+	assert.Equal(t, []string{"test"}, params.GetExcludedDirs())
 	assert.IsType(t, &RealWatcher{}, params.GetWatcher())
 }

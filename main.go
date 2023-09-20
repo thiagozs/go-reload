@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -15,24 +16,33 @@ var (
 	dirToMonitor string
 	command      string
 	excluded     string
+	params       string
 )
 
 func main() {
 	flag.StringVar(&dirToMonitor, "dir", ".", "Directory to monitor for changes")
 	flag.StringVar(&command, "cmd", "", "Command to run when a change is detected")
 	flag.StringVar(&excluded, "exclude", "", "Comma-separated list of directories to exclude from monitoring")
+	flag.StringVar(&params, "params", "", "Comma-separated list of parameters to pass to the command")
 	flag.Parse()
 
 	if command == "" {
 		log.Fatal("Please specify a command to run using the -cmd flag")
 	}
 
-	excludedDirs := make(map[string]bool)
-	for _, dir := range strings.Split(excluded, ",") {
-		excludedDirs[dir] = true
+	var dirExcluded []string
+	if strings.Contains(excluded, ",") {
+		norm := strings.Split(excluded, ",")
+		for _, v := range norm {
+			dirExcluded = append(dirExcluded,
+				fmt.Sprintf("%s/%s", dirToMonitor, v))
+		}
+	} else {
+		dirExcluded = append(dirExcluded,
+			fmt.Sprintf("%s/%s", dirToMonitor, excluded))
 	}
 
-	realWatcher, err := runner.NewRealWatcher()
+	rw, err := runner.NewRealWatcher()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,8 +50,9 @@ func main() {
 	opts := []runner.CmdOpts{
 		runner.DirToMonitor(dirToMonitor),
 		runner.Command(command),
-		runner.ExcludedDirs(excludedDirs),
-		runner.RegisterWatcher(realWatcher),
+		runner.ExcludedDirs(dirExcluded),
+		runner.RegisterWatcher(rw),
+		runner.CmdParams(params),
 	}
 
 	r, err := runner.NewCommandRunner(opts...)
@@ -56,7 +67,7 @@ func main() {
 
 	<-done
 
-	realWatcher.Close()
+	rw.Close()
 
 	log.Println("Stopping the watcher...")
 }
